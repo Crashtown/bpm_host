@@ -1,0 +1,73 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+
+ARGV << '--help' if ARGV.empty?
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: index [options]"
+
+  opts.on("-f", "--file [FILE]", "input .xlsx file") do |file|
+    unless File.exist?(file)
+      puts 'File not exist'
+      exit
+    end
+    unless File.extname(file) == '.xlsx'
+      puts 'Invalid file'
+      exit
+    end
+    options[:filename] = file
+  end
+
+  opts.on_tail("-h", "--help", "Show this message") do
+    puts opts
+    exit
+  end
+end.parse!
+
+# require rails environment
+
+# => set rails env there DEFAULT: development
+# ENV['RAILS_ENV'] ||= 'production'
+require File.expand_path('../../config/environment', __FILE__)
+
+# parse .xlsx with roo
+require 'roo'
+
+spreadsheet = Roo::Excelx.new(options[:filename])
+
+spreadsheet.default_sheet = spreadsheet.sheets[2]
+debt_type_entries = spreadsheet.entries.drop(1)
+DebtType.connection
+p 'Insert debt types...'
+ActiveRecord::Base.transaction do
+  debt_type_entries.each do |debt_type|
+    DebtType.find_or_create_by(id: debt_type[0].to_i, name: debt_type[1])
+  end
+end
+p 'done'
+
+spreadsheet.default_sheet = spreadsheet.sheets[0]
+debts = spreadsheet.entries.drop(1)
+Debt.connection
+p 'Insert first debts...'
+ActiveRecord::Base.transaction do
+  debts.each do |debt|
+    Debt.find_or_create_by(debt_type_id: debt[0].to_i,
+      currency_code: debt[1], count: debt[2], date: '311213')
+  end
+end
+p 'done'
+
+spreadsheet.default_sheet = spreadsheet.sheets[1]
+debts = spreadsheet.entries.drop(1)
+p 'Insert second debts...'
+ActiveRecord::Base.transaction do
+  debts.each do |debt|
+    Debt.find_or_create_by(debt_type_id: debt[0].to_i,
+      currency_code: debt[1], count: debt[2], date: '311214')
+  end
+end
+p 'done'
+
