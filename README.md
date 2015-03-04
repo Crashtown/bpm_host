@@ -3,6 +3,8 @@
 ###Review:
 Grape mounted on rails API + simple parser for directories with MP3 files
 
+Front-end client: [Bpm_front](https://github.com/Crashtown/bpm_front)
+
 ###Documentation:
 open
 > localhost:3000/apidoc
