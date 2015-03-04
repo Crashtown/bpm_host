@@ -8,16 +8,15 @@ module API
         get '/', desc: 'wow' do
           Track.limit(20)
         end
-      end
 
-      desc "Return a track"
-      params do
-        requires :id, type: String, desc: "ID of the track"
+        desc "Return a track"
+        params do
+          requires :id, type: String, desc: "ID of the track"
+        end
+        get '/:id' do
+          present Track.where(id: permitted_params[:id]).first!
+        end
       end
-      get 'track/:id' do
-        present Track.where(id: permitted_params[:id]).first!
-      end
-
     end
   end
 end

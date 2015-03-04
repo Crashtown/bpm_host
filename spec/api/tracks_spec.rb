@@ -8,10 +8,10 @@ describe 'API::Tracks endpoint', type: :request do
       expect(JSON.parse(response.body)).to eq []
     end
   end
-  describe "GET /api/track/:id" do
+  describe "GET /api/v1/tracks/:id" do
     it "returns a track by id" do
       track = Track.create!
-      get "/api/v1/track/#{track.id}"
+      get "/api/v1/tracks/#{track.id}"
       expect(response.body).to eq track.entity.to_json
     end
   end
