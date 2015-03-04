@@ -7,9 +7,19 @@ class Track < ActiveRecord::Base
   end
 
   class Entity < Grape::Entity
+    root 'tracks', 'track'
     expose :id
-    expose :title do |track, options|
+    expose :trackNumberTag do |track, options|
+      track.track_number_tag
+    end
+    expose :titleTag do |track, options|
       track.title_tag
+    end
+    expose :albumTag do |track, options|
+      track.album_tag
+    end
+    expose :yearTag do |track, options|
+      track.year_tag
     end
   end
 end
