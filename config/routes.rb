@@ -2,7 +2,6 @@ Rails.application.routes.draw do
   mount API::Root, at: '/'
   mount GrapeSwaggerRails::Engine, at: "/apidoc"
   root to: API::Root
-  get 'stats/index'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
