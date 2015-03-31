@@ -14,7 +14,9 @@ class Catalog
     private
 
       def import_track(track_path, track_directory)
-        tag_info = Mp3Info.open(track_path).tag.symbolize_keys
+        tag_info = Mp3Info.open(track_path) do |mp3info|
+          mp3info.tag.symbolize_keys
+        end
         ActiveRecord::Base.transaction do
           artist = Artist.find_or_create_by(name: tag_info[:artist])
           album = Album.find_or_create_by(name: tag_info[:album], year: tag_info[:year])

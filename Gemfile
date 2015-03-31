@@ -44,6 +44,7 @@ gem "hashie_rails"
 #=== 
 group :development, :test do
   gem 'rspec-rails', '~> 3.2'
+  gem 'database_cleaner', '~> 1.4.1'
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
 

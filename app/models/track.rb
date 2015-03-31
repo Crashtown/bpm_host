@@ -1,9 +1,18 @@
+require 'mp3info'
+
 class Track < ActiveRecord::Base
   belongs_to :album
   belongs_to :artist
 
   def entity
     Entity.new(self)
+  end
+
+  def write_tag(tag_info)
+    tag_hash = tag_info.stringify_keys
+    Mp3Info.open(filepath) do |track|
+      track.tag1 = tag_hash
+    end
   end
 
   class Entity < Grape::Entity

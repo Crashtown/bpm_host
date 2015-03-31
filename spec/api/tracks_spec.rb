@@ -5,14 +5,15 @@ describe 'API::Tracks endpoint', type: :request do
     it "returns first 20 tracks" do
       get "/api/v1/tracks"
       expect(response.status).to eq(200)
-      expect(JSON.parse(response.body)).to eq []
+      expect(response.body).to eq ({'tracks'=> []}.to_json)
     end
   end
   describe "GET /api/v1/tracks/:id" do
-    it "returns a track by id" do
+    it "returns a track entity by id" do
       track = Track.create!
       get "/api/v1/tracks/#{track.id}"
-      expect(response.body).to eq track.entity.to_json
+      expect(response.status).to eq(200)
+      expect(response.body).to eq ({'track' => track.entity}.to_json)
     end
   end
 end

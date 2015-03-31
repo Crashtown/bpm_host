@@ -1,0 +1,2 @@
+real_track:
+  filepath: <%= (Rails.root + 'mp3' + 'VA' + '01 - EurythmY - Liquid Wonderment.mp3').to_s %>
