@@ -1,6 +1,9 @@
 class Album < ActiveRecord::Base
   belongs_to :artist
   has_many :tracks
+  scope :va, -> { where(va: true) }
+
+  validates :name, presence: true
 
   def entity
     Entity.new(self)
