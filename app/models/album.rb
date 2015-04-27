@@ -17,5 +17,16 @@ class Album < ActiveRecord::Base
     expose :coverUrl do |album, options|
       'kek'
     end
+    expose :artist do |album, options|
+      album.artist_id
+    end
+    expose :tracks do |album, options|
+      album.track_ids
+    end
+  end
+  searchable do
+    text :name
+    integer :year
+    integer :id, stored: true
   end
 end

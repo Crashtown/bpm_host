@@ -15,3 +15,8 @@
 /log/*
 !/log/.keep
 /tmp
+
+# Ignore solr index
+solr/development/*
+solr/test/*
+solr/pids/*

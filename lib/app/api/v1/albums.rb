@@ -26,6 +26,23 @@ module API
           present Album.where(id: permitted_params[:id]).first!
         end
 
+        desc 'Update album'
+        params do
+          requires :album, type: Hash do
+            requires :id, type: Integer
+            optional :name, type: String
+            optional :year, type: Integer
+          end
+        end
+        put '/:id' do
+          album = Album.find(permitted_params[:album][:id])
+          if album.update(permitted_params[:album])
+            present album
+          else
+            error! :unprocessable_entity
+          end
+        end
+
       end
     end
   end

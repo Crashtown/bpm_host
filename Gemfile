@@ -33,6 +33,9 @@ gem 'ruby-mp3info'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
+gem 'sunspot_rails'
+gem 'sunspot_solr'
+gem 'progress_bar'
 #=== API required gems
 # gem "active_model_serializers"
 gem "grape"

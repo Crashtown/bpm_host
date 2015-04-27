@@ -3,9 +3,10 @@ require "grape-swagger"
 module API
   module V1
     class Root < Grape::API
-
+      mount API::V1::Search
       mount API::V1::Tracks
       mount API::V1::Albums
+      mount API::V1::Artists
       # mount API::V1::AnotherResource
 
       add_swagger_documentation(
