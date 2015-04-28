@@ -24,6 +24,7 @@ class Album < ActiveRecord::Base
       album.track_ids
     end
   end
+  
   searchable do
     text :name
     integer :year

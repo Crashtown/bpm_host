@@ -58,5 +58,6 @@ group :development, :test do
   gem 'spring'
 
   gem 'pry-rails', '~> 0.3.3'
+  gem 'railroady'
 end
 
