@@ -1,7 +1,7 @@
 require 'mp3info'
+require 'fileutils'
 
 class Catalog
-
   class << self
     def import_path(path)
       entries = Dir.entries(path) - ['.', '..']
@@ -13,7 +13,21 @@ class Catalog
     end
 
     def export_path(path)
-      'kek'
+      fail ArgumentError.new, 'somth is baaaad' unless path.directory?
+      FileUtils.cd path
+      Artist.each do |artist|
+        FileUtils.mkdir artist.name
+        FileUtils.cd artist.name do
+          artist.albums.each do |album|
+            FileUtils.mkdir album.name
+            FileUtils.cd album.name do
+              album.tracks.each do |track|
+                FileUtils.cp track.filepath, track.title_tag
+              end
+            end
+          end
+        end
+      end
     end
 
     private
@@ -23,7 +37,7 @@ class Catalog
     end
 
     def cover_file?(file_path)
-      image_extension?(file_path.extname) && file_path.basename == 'cover' 
+      image_extension?(file_path.extname) && file_path.basename == 'cover'
     end
 
     def image_extension?(file_extension)
@@ -35,10 +49,10 @@ class Catalog
     end
 
     def import_track(track_path, track_directory)
-      tag_info = mp3_meta_data(track_path)
+      tag_info = meta_data(track_path)
       ActiveRecord::Base.transaction do
         artist = Artist.find_or_create_by(name: tag_info[:artist])
-        album = Album.find_or_create_by(name: tag_info[:album], 
+        album = Album.find_or_create_by(name: tag_info[:album],
                                         year: tag_info[:year])
         Track.find_or_create_by(
           album: album,
