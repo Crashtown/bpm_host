@@ -5,6 +5,14 @@ module API
 
       namespace 'tracks' do
 
+        desc "Search"
+        params do
+          requires :query, type: String, desc: 'query string'
+        end
+        get 'search/:query', desc: 'return search results' do
+          present Api::Search::TrackSearch.new(permitted_params[:query])
+        end
+
         desc 'Return all tracks'
         params do
           optional :ids, type: Array[Integer], desc: 'IDs of the tracks'

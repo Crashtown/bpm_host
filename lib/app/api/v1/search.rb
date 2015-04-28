@@ -5,10 +5,10 @@ module API
 
       desc "Search"
       params do
-        requires :query, type: String, desc: 'query string'
+        requires :q, type: String, desc: 'query string'
       end
-      get 'search/:query', desc: 'return search results' do
-        present Api::Search.new(query: permitted_params[:query])
+      get 'search', desc: 'return search results' do
+        present Api::Search::TrackSearch.new(permitted_params[:q])
       end
     end
   end
