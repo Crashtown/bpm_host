@@ -2,35 +2,61 @@ require 'mp3info'
 require 'fileutils'
 
 class Catalog
+
   class << self
+    ILLEGAL_CHARS_EXPRESSION = /[^\w `#`~!@''\$%&\(\)_\-\+=\[\]\{\};,\.]/
+    
     def import_path(path)
-      entries = Dir.entries(path) - ['.', '..']
       path.each_child do |file_path|
-        self.import_path(file_path) if file_path.directory?
+        import_path(file_path) if file_path.directory?
         import_track(file_path, path) if mp3_file?(file_path)
-        # import_cover(file_path, path) if cover_file?(file_path)
+        import_cover(file_path, path) if cover_file?(file_path)
       end
     end
 
     def export_path(path)
-      fail ArgumentError.new, 'somth is baaaad' unless path.directory?
-      FileUtils.cd path
-      Artist.each do |artist|
-        FileUtils.mkdir artist.name
-        FileUtils.cd artist.name do
-          artist.albums.each do |album|
-            FileUtils.mkdir album.name
-            FileUtils.cd album.name do
-              album.tracks.each do |track|
-                FileUtils.cp track.filepath, track.title_tag
-              end
-            end
-          end
-        end
-      end
+      fail ArgumentError.new, 'VRONG VRONG RAISE UR DONGERS' unless path.directory?
+      Artist.each { export_artist(artist, path) }
     end
 
     private
+
+    def sanitize_filename(filename)
+      if illegal_chars?(filename) 
+        filename.gsub(ILLEGAL_CHARS_EXPRESSION, '')
+      else
+        filename
+      end
+    end
+
+    def illegal_chars?(filename)
+      filename =~ ILLEGAL_CHARS_EXPRESSION
+    end
+
+    def export_artist(artist, path)
+      FileUtils.cd path
+      filename = sanitize_filename(artist.name)
+      artist_catalog = path + filename
+      FileUtils.mkdir artist_catalog
+      artist.albums.each { |album| export_album(album, artist_catalog) }
+    end
+
+    def export_album(album, path)
+      FileUtils.cd path
+      filename = sanitize_filename(album.name)
+      album_catalog = path + filename
+      FileUtils.mkdir album_catalog
+      album.tracks.each { |track| export_track(track, album_catalog) }
+      album.update_attribute(:filepath, album_catalog)
+    end
+
+    def export_track(track, path)
+      FileUtils.cd path
+      filename = sanitize_filename(track_title_tag)
+      track_catalog = path + filename
+      FileUtils.cp track.filepath, track_catalog
+      track.update_attribute(:filepath, track_catalog)
+    end
 
     def mp3_file?(file_path)
       file_path.extname == '.mp3' || file_path.extname == '.MP3'
@@ -52,8 +78,9 @@ class Catalog
       tag_info = meta_data(track_path)
       ActiveRecord::Base.transaction do
         artist = Artist.find_or_create_by(name: tag_info[:artist])
-        album = Album.find_or_create_by(name: tag_info[:album],
-                                        year: tag_info[:year])
+        album = Album.find_or_create_by(filepath: track_directory.to_s)
+        album.update_attribute(:name, tag_info[:album]) if album.name.nil?
+        album.update_attribute(:year, tag_info[:year]) if album.year.nil?
         Track.find_or_create_by(
           album: album,
           artist: artist,
@@ -66,6 +93,13 @@ class Catalog
           track_number_tag: tag_info[:tracknum]
         )
       end
+    end
+
+    def import_cover(cover_path, track_directory)
+      album = Album.find_or_create_by(filepath: track_directory.to_s)
+      album.update_attribute(
+        :covers, (album.covers |= [track_directory.to_s]).sort
+      )
     end
 
     def meta_data(track_path)

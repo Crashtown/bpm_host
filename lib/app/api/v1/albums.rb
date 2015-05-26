@@ -43,6 +43,18 @@ module API
           end
         end
 
+        desc 'Return albums cover'
+        params do
+          requires :id, type: Integer
+        end
+        get '/:id/cover' do
+          album = Album.find(permitted_params[:id])
+          filename = album.selected_cover
+          content_type MIME::Types.type_for(filename).to_s
+          env['api.format'] = :binary
+          header "Content-Disposition", "attachment; filename*=UTF-8''#{URI.escape(filename)}"
+          File.read(filename)
+        end
       end
     end
   end

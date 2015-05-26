@@ -3,6 +3,8 @@ class Album < ActiveRecord::Base
   has_many :tracks
   scope :va, -> { where(va: true) }
 
+  serialize :covers, Array
+
   validates :name, presence: true
 
   def entity

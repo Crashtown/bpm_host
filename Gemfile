@@ -43,7 +43,9 @@ gem "grape"
 gem "grape-swagger-rails"
 gem 'grape-entity'
 gem "rack-cors", require: "rack/cors"
+
 gem "hashie_rails"
+
 #=== 
 group :development, :test do
   gem 'rspec-rails', '~> 3.2'

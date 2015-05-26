@@ -6,7 +6,6 @@ class Track < ActiveRecord::Base
 
   after_update :write_tags
 
-
   def entity
     Entity.new(self)
   end
@@ -15,9 +14,8 @@ class Track < ActiveRecord::Base
 
   def write_tags
     return unless tags_changed?
-    tag_hash = tag_info
     Mp3Info.open(self[:filepath]) do |track|
-      track.tag1 = tag_hash
+      track.tag1 = tag_info
     end
   end
 
